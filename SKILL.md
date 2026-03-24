@@ -5,6 +5,14 @@ description: Automates the extraction and filling of corporate payment applicati
 
 # Corporate Reimbursement Automation Skill
 
+## Pre-flight Check (MANDATORY)
+Before processing any files, the agent MUST run the environment check script to ensure all dependencies (`docling`, `openpyxl`) are installed:
+```bash
+python3 engine/check_env.py
+```
+If the check fails, report the missing dependencies to the user and stop.
+
+
 This skill is designed to process reimbursement materials (invoices, receipts, trip tables) and populate complex payment application Excel templates, correctly handling different company headers, tax calculations, and dynamic formula protection.
 
 ## Workflow
