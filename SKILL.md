@@ -32,7 +32,7 @@ Once you have mapped the logic (which files belong to which header, and what the
 
 Run the engine script (assuming you have already mapped data internally or pass it via JSON):
 ```bash
-python3 reimbursement_engine.py --input-dir <path> --template "TEMPLATE_FILE.xlsx" --output-dir <path>
+python3 reimburse.py --input-dir <path> --template "TEMPLATE_FILE.xlsx" --output-dir <path>
 ```
 
 ### Phase 3: Validation
@@ -41,7 +41,7 @@ After the engine completes:
 2. Open the generated Excel using `pandas` or `openpyxl` to spot-check that totals align with the original PDF sums.
 
 ## Critical Constraints
-- **Do not overwrite formulas:** The Excel template uses automatic calculations. You must rely on `reimbursement/excel_engine.py`'s `safe_write` method.
+- **Do not overwrite formulas:** The Excel template uses automatic calculations. You must rely on `engine/excel_engine.py`'s `safe_write` method.
 - **Dynamic Row Insertion:** Different months have different numbers of entries. If you run out of pre-allocated rows, you MUST instruct the engine to dynamically insert new rows BEFORE writing.
 - **Ride-hailing Parsing:** Link the Trip Table (行程单) for city routing to the Invoice (电子发票) for the tax header.
 - **Dining Splitting & Limits:** 
