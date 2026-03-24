@@ -20,7 +20,7 @@ class TestExcelEngine(unittest.TestCase):
         self.temp_dir.cleanup()
 
     def test_formula_protection(self):
-        from reimbursement.excel_engine import safe_write
+        from engine.excel_engine import safe_write
         
         wb = openpyxl.load_workbook(self.test_file)
         ws = wb["TestSheet"]
@@ -37,7 +37,7 @@ class TestExcelEngine(unittest.TestCase):
         self.assertEqual(ws['A2'].value, 200)
 
     def test_insert_row_with_formats(self):
-        from reimbursement.excel_engine import ReimbursementExcel
+        from engine.excel_engine import ReimbursementExcel
         excel = ReimbursementExcel(self.test_file)
         
         # Insert row at 2, moving old row 2 down

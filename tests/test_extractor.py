@@ -1,7 +1,6 @@
 import unittest
 import os
-from reimbursement.extractor import extract_pdf_text
-from reimbursement.config import HEADERS
+from engine.extractor import extract_pdf_text
 
 class TestExtractor(unittest.TestCase):
     def test_docling_extraction(self):
@@ -15,8 +14,8 @@ class TestExtractor(unittest.TestCase):
         text = extract_pdf_text(test_pdf)
         self.assertIsInstance(text, str)
         self.assertTrue(len(text) > 0)
-        # Check if it extracted one of the target headers (use placeholder for GitHub safety)
-        self.assertTrue(any(h in text for h in HEADERS.values()) or "CORPORATE" in text)
+        # Basic quality guard: extracted text should include key invoice/travel tokens.
+        self.assertTrue(any(token in text for token in ["发票", "行程", "金额", "抬头", "公司"]))
 
 if __name__ == '__main__':
     unittest.main()

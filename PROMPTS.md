@@ -4,14 +4,14 @@ These prompts are designed to be used by the AI agent when classifying and extra
 
 ## Prompt 1: Invoice Classification (Zero-Shot)
 **Context:** You are an AI assisting in corporate reimbursement.
-**Task:** Analyze the provided text (from PDF) or image (screenshot) and the **filename** to classify it into a standardized JSON format.
+**Task:** Analyze the provided text (from PDF) or image (screenshot) plus folder context to classify it into a standardized JSON format.
 **Rules:**
 1. Identify the Purchaser Header: Match against the recognized corporate entities (e.g., entity BJ or entity SH). If neither, return "UNKNOWN".
-2. Identify Category & Dining Details (from Filename & Content):
+2. Identify Category & Dining Details (from Folder Context & Content):
    - "住宿费" (Hotel)
    - "餐费" (Dining) -> 
-     - Check filename for tags: `工作餐` (Work Meal) or `招待/业务餐` (Hospitality).
-     - Extract `people_count` from filename (e.g., `1人`, `3人`). Default to 1 if not specified.
+     - Prefer folder context for tags: `工作餐` (Work Meal) or `招待/业务餐` (Hospitality).
+     - `people_count` can start from default value and be confirmed in post-run correction.
      - **Constraint (Work Meal):** Max 80 RMB per person. Final `amount` = `min(Total Amount, people_count * 80)`.
    - "交通费-滴滴" (Didi/Ride-hailing)
    - "交通费-机票" (Flight)

@@ -1,11 +1,8 @@
-# reimbursement/config.py
+# engine/config.py
 
-# Mapping of Purchaser Name headers to Output Excel file suffixes
-# USAGE: Fill these with your actual company names for local execution.
-HEADERS = {
-    "BJ": "CORPORATE_ENTITY_BJ_NAME",
-    "SH": "CORPORATE_ENTITY_SH_NAME"
-}
+# Optional legacy aliases. The engine now infers entity names from invoice text.
+# Keep empty by default to avoid hard-coding any city/company assumptions.
+HEADERS = {}
 
 # Excel structure mapping based on the provided blank template
 EXCEL_MAPPING = {

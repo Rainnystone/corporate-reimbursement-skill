@@ -1,9 +1,8 @@
 import json
-import os
 import argparse
 from datetime import datetime
 from engine.excel_engine import ReimbursementExcel, safe_write
-from engine.config import HEADERS, EXCEL_MAPPING
+from engine.semantic import build_flight_details, extract_travel_application_info
 
 def format_date_str(date_str):
     if not date_str: return ""
@@ -18,7 +17,10 @@ def unmerge_at_cell(worksheet, coordinate):
 
 def clean_city(city):
     if not city: return ""
-    return city.replace("北京市", "北京").replace("上海市", "上海").replace("市", "")
+    text = str(city).strip()
+    if text.endswith("市"):
+        text = text[:-1]
+    return text
 
 def find_anchor_row(worksheet, search_val, start_row=1, col_idx=2):
     for r in range(start_row, 100):
@@ -103,16 +105,28 @@ def populate_excel(data, template_path, output_path, header_type):
     flight_anchor = find_anchor_row(ws_trans1, "二、航空运输电子客票行程单", 1, 2)
     if flight_anchor:
         row = flight_anchor
+        travel_context = data.get("travel_context", {})
+        if not travel_context and data.get("travel_application_text"):
+            travel_context = extract_travel_application_info(data["travel_application_text"])
         for item in data.get("transport", []):
             if "机票" in item["category"]:
+                departure = item.get("departure_city") or travel_context.get("departure_city", "")
+                destination = item.get("destination_city") or travel_context.get("destination_city", "")
+                reason = item.get("travel_reason") or travel_context.get("travel_reason", "")
+                details = item.get("details") or build_flight_details(departure, destination, reason)
+
                 safe_write(ws_trans1, f"C{row}", format_date_str(item["date"]))
-                safe_write(ws_trans1, f"D{row}", clean_city(item["city"]))
-                safe_write(ws_trans1, f"E{row}", item.get("details", "机票费"))
+                safe_write(ws_trans1, f"D{row}", clean_city(departure or item.get("city", "")))
+                safe_write(ws_trans1, f"E{row}", details)
                 safe_write(ws_trans1, f"F{row}", "RMB")
                 if "ticket" in item:
                     safe_write(ws_trans1, f"G{row}", item["ticket"])
                     safe_write(ws_trans1, f"H{row}", item["fund"])
                     safe_write(ws_trans1, f"I{row}", item["fuel"])
+                else:
+                    safe_write(ws_trans1, f"G{row}", item.get("amount", 0))
+                    safe_write(ws_trans1, f"H{row}", 0)
+                    safe_write(ws_trans1, f"I{row}", 0)
                 safe_write(ws_trans1, f"M{row}", 1)
                 row += 1
 
@@ -126,22 +140,15 @@ def populate_excel(data, template_path, output_path, header_type):
             period_str = format_date_str(data[cat][0]["date"])
             break
 
-    # Header-specific order and naming
-    if header_type == "SH":
-        cat_map = {
-            "机票": sum(i["amount"] for i in data.get("transport", []) if "机票" in i["category"]),
-            "交通：滴滴": sum(i["amount"] for i in data.get("transport", []) if "滴滴" in i["category"]),
-            "酒店住宿": sum(i["amount"] for i in data.get("hotel", [])),
-            "餐费": sum(i["amount"] for i in data.get("dining", []))
-        }
-        order = ["机票", "交通：滴滴", "酒店住宿", "餐费"]
-    else: # BJ
-        cat_map = {
-            "餐费": sum(i["amount"] for i in data.get("dining", [])),
-            "交通：滴滴": sum(i["amount"] for i in data.get("transport", []) if "滴滴" in i["category"]),
-            "其他费用：话费": sum(i["amount"] for i in data.get("phone", []))
-        }
-        order = ["餐费", "交通：滴滴", "其他费用：话费"]
+    # Entity-agnostic summary
+    cat_map = {
+        "机票": sum(i["amount"] for i in data.get("transport", []) if "机票" in i["category"]),
+        "交通：滴滴": sum(i["amount"] for i in data.get("transport", []) if "滴滴" in i["category"]),
+        "酒店住宿": sum(i["amount"] for i in data.get("hotel", [])),
+        "餐费": sum(i["amount"] for i in data.get("dining", [])),
+        "其他费用：话费": sum(i["amount"] for i in data.get("phone", [])),
+    }
+    order = ["机票", "交通：滴滴", "酒店住宿", "餐费", "其他费用：话费"]
 
     # Fill Payee/Bank/Account if present in data
     if "payee" in data: safe_write(ws_cover, "D22", data["payee"])

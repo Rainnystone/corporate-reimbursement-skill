@@ -13,14 +13,14 @@
 ### Task 1: Project Scaffolding & Configuration
 
 **Files:**
-- Create: `reimbursement/config.py`
-- Create: `reimbursement/utils.py`
+- Create: `engine/config.py`
+- Create: `engine/utils.py`
 - Create: `tests/test_config.py`
 
 - [ ] **Step 1: Write configuration tests**
 ```python
 def test_config_constants():
-    from reimbursement.config import HEADERS, EXCEL_MAPPING
+    from engine.config import HEADERS, EXCEL_MAPPING
     assert "BJ" in HEADERS
     assert "SH" in HEADERS
     assert "国内差旅详单" in EXCEL_MAPPING["sheets"]
@@ -39,20 +39,20 @@ Expected: PASS
 
 - [ ] **Step 5: Commit**
 ```bash
-git add reimbursement/config.py reimbursement/utils.py tests/test_config.py
+git add engine/config.py engine/utils.py tests/test_config.py
 git commit -m "feat: setup project structure and configuration"
 ```
 
 ### Task 2: Implement `Excel-Engine` (Template Writer)
 
 **Files:**
-- Create: `reimbursement/excel_engine.py`
+- Create: `engine/excel_engine.py`
 - Create: `tests/test_excel_engine.py`
 
 - [ ] **Step 1: Write test for formula protection**
 ```python
 def test_formula_protection(tmp_path):
-    from reimbursement.excel_engine import safe_write
+    from engine.excel_engine import safe_write
     # Create dummy workbook with formula
     # Try to overwrite formula cell -> assert skipped
     # Try to overwrite empty cell -> assert written
@@ -71,20 +71,20 @@ Expected: PASS
 
 - [ ] **Step 5: Commit**
 ```bash
-git add reimbursement/excel_engine.py tests/test_excel_engine.py
+git add engine/excel_engine.py tests/test_excel_engine.py
 git commit -m "feat: implement formula-safe excel writer"
 ```
 
 ### Task 3: Implement `Data-Extractor` (Docling wrapper)
 
 **Files:**
-- Create: `reimbursement/extractor.py`
+- Create: `engine/extractor.py`
 - Create: `tests/test_extractor.py`
 
 - [ ] **Step 1: Write extraction test**
 ```python
 def test_docling_extraction():
-    from reimbursement.extractor import extract_pdf_text
+    from engine.extractor import extract_pdf_text
     # Mock docling converter or use a tiny sample PDF
     text = extract_pdf_text("sample.pdf")
     assert type(text) == str
@@ -103,7 +103,7 @@ Expected: PASS
 
 - [ ] **Step 5: Commit**
 ```bash
-git add reimbursement/extractor.py tests/test_extractor.py
+git add engine/extractor.py tests/test_extractor.py
 git commit -m "feat: implement docling pdf text extractor"
 ```
 
@@ -111,7 +111,7 @@ git commit -m "feat: implement docling pdf text extractor"
 
 **Files:**
 - Create: `reimbursement_engine.py`
-- Modify: `reimbursement/config.py`
+- Modify: `engine/config.py`
 
 - [ ] **Step 1: Implement main CLI script**
 Write `reimbursement_engine.py` using `argparse` to accept `--input-dir`, `--template`, and `--output-dir`. Connect Extractor -> Excel Engine.
