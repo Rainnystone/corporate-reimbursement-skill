@@ -4,6 +4,13 @@
 
 ## 中文
 
+### 安装
+
+```bash
+git clone https://github.com/Rainnystone/corporate-reimbursement-skill.git
+cd corporate-reimbursement-skill
+```
+
 ### 先决条件
 
 1. 运行这个 skill 的模型必须支持看图和多模态输入。
@@ -94,6 +101,13 @@ PYTHONPATH=. python3 reimburse.py --setup --input-dir <invoices_folder> --templa
 - 输出目录里会生成运行报告文件，供后续查看。
 
 ## English
+
+### Installation
+
+```bash
+git clone https://github.com/Rainnystone/corporate-reimbursement-skill.git
+cd corporate-reimbursement-skill
+```
 
 ### Prerequisites
 
